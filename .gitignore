@@ -1,0 +1,7 @@
+# .gitignore para .NET / Avalonia
+bin/
+obj/
+.vscode/
+*.user
+*.suo
+.DS_Store
