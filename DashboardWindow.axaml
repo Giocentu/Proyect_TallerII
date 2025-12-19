@@ -30,7 +30,7 @@
                    VerticalAlignment="Center" 
                    Margin="20">
             
-            <Button Name="btnPersonal" Width="180" Height="120" Margin="15" Background="#E74C3C" CornerRadius="8">
+            <Button Name="btnPersonal" Click="BtnPersonal_Click" Width="180" Height="120" Margin="15" Background="#E74C3C" CornerRadius="8">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="👥" FontSize="35" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                     <TextBlock Text="Personal" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center"/>

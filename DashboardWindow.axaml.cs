@@ -43,4 +43,12 @@ public partial class DashboardWindow : Window
         new MainWindow().Show();
         this.Close();
     }
+
+    public void BtnPersonal_Click(object source, RoutedEventArgs args)
+    {
+        var ventanaPersonal = new PersonalWindow();
+        ventanaPersonal.ShowDialog(this); 
+        // ShowDialog bloquea el dashboard hasta que cierres la ventana de personal.
+        // Es útil para que no abran 50 ventanas a la vez.
+    }
 }
