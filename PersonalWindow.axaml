@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MiProyecto.PersonalWindow"
+        Title="Gestión de Personal"
+        Width="900" Height="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto, *, Auto" Margin="20">
+        <TextBlock Text="Listado de Empleados" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+
+        <DataGrid Grid.Row="1" Name="gridEmpleados" AutoGenerateColumns="True" IsReadOnly="True" BorderThickness="1" BorderBrush="Gray">
+            </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" Margin="0,20,0,0" HorizontalAlignment="Right">
+            <Button Content="Nuevo Empleado" Background="#27AE60" Foreground="White"/>
+            <Button Content="Editar" Background="#F39C12" Foreground="White"/>
+            <Button Content="Eliminar" Background="#C0392B" Foreground="White"/>
+            <Button Name="btnVolver" Content="Volver" Click="BtnVolver_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -35,11 +35,13 @@ public partial class MainWindow : Window
         // 3. VERIFICAR RESULTADO:
         if (usuario != null)
         {
-            // SI NO ES NULL: Significa que Login() encontró al usuario y nos devolvió sus datos.
-            lblStatus.Text = $"✅ ¡Hola {usuario.Nombre}! ({usuario.Rol})";
+            lblStatus.Text = "¡Acceso Correcto!";
             lblStatus.Foreground = Avalonia.Media.Brushes.Green;
-            
-            // (Aquí luego pondremos el código para cambiar de ventana)
+
+            // --- ABRIR EL DASHBOARD ---
+            var dashboard = new DashboardWindow(usuario); // Pasamos los datos del usuario
+            dashboard.Show();
+            this.Close(); // Cerramos el login
         }
         else
         {
