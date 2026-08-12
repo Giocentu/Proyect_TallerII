@@ -1,0 +1,28 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="_-7cR8KK0VBr0hEr222i">
+    <mxGraphModel dx="2429" dy="674" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="LLi7HNEB2yUvJCopIRzm-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="" vertex="1">
+          <mxGeometry height="620" width="620" x="120" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="LLi7HNEB2yUvJCopIRzm-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Software - RestoApp&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="230" x="290" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="LLi7HNEB2yUvJCopIRzm-3" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Administrado&lt;div&gt;/dueño&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="40" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="LLi7HNEB2yUvJCopIRzm-4" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Gerente" vertex="1">
+          <mxGeometry height="70" width="40" x="800" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="LLi7HNEB2yUvJCopIRzm-7" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Cajero" vertex="1">
+          <mxGeometry height="70" width="40" x="800" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="LLi7HNEB2yUvJCopIRzm-11" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Recepcionista" vertex="1">
+          <mxGeometry height="70" width="40" x="10" y="460" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

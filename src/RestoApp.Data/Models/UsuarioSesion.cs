@@ -1,6 +1,6 @@
-namespace MiProyecto.Models;
+namespace RestoApp.Data.Models;
+
 // Modelo para almacenar la información del usuario en sesión
-// En palabras simples, es una plantilla que transporta los datos del usuario al sistema
 public class UsuarioSesion
 {
     public long Dni { get; set; }

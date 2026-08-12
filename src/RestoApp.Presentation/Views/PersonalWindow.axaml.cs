@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace MiProyecto;
+namespace RestoApp.Presentation.Views;
 
 public partial class PersonalWindow : Window
 {
@@ -12,6 +12,6 @@ public partial class PersonalWindow : Window
 
     public void BtnVolver_Click(object source, RoutedEventArgs args)
     {
-        this.Close(); // Solo cerramos esta ventana para volver al Dashboard que está abajo
+        this.Close();
     }
 }

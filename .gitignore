@@ -1,9 +1,40 @@
-# .gitignore para .NET / Avalonia
-bin/
-obj/
-.vscode/
-*.user
-*.suo
-.DS_Store
+# ==========================================
+# .gitignore para .NET / Avalonia UI (Linux & Windows)
+# ==========================================
 
-.fake
+# Build artifacts
+**/[Bb]in/
+**/[Oo]bj/
+**/[Lld]og/
+**/[Ll]ogs/
+[Tt]emp/
+
+# User-specific files & IDE configuration
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosv
+*.suo
+*.userprefs
+*.sln.docstates
+*.DotSettings.user
+
+# Mac / Linux system files
+.DS_Store
+.directory
+*.swp
+*~
+
+# Test & Coverage results
+TestResults/
+*.coverage
+
+# Sensitive configuration & local connection strings
+appsettings.Development.json
+secrets.json
+*.env
+
+# Avalonia / Nuke build temporary files
+.nuke/temp/
+.fake/

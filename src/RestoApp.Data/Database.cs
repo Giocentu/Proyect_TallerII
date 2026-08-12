@@ -1,14 +1,14 @@
-// Puente entre la base de datos y la aplicación
 using Microsoft.Data.SqlClient;
-using MiProyecto.Models; // Importamos la carpeta models
+using RestoApp.Data.Models;
 using System;
 
-namespace MiProyecto.Data;
+namespace RestoApp.Data;
 
 public class Database
 {
-    // Cadena de conexión a tu Docker local
+    // Cadena de conexión a Docker local
     private string connectionString = "Server=127.0.0.1,1433;Database=proyect_Resto;User Id=sa;Password=AlphaCentu123.;TrustServerCertificate=True;";
+
     public UsuarioSesion? Login(string usuario, string password)
     {
         using (SqlConnection conn = new SqlConnection(connectionString))
@@ -17,7 +17,6 @@ public class Database
             {
                 conn.Open();
                 
-                // Consulta que une Empleado + Persona + Rol
                 string query = @"
                     SELECT e.dni_empleado, p.nombre, p.apellido, r.descripcion, r.permiso_admin 
                     FROM empleado e
@@ -29,38 +28,33 @@ public class Database
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    // Convertimos el usuario a número (DNI)
                     if (long.TryParse(usuario, out long dniNumerico))
                     {
-                         cmd.Parameters.AddWithValue("@user", dniNumerico);
+                        cmd.Parameters.AddWithValue("@user", dniNumerico);
                     }
                     else
                     {
-                         return null; // Si escribió letras en el DNI, rechazamos
+                        return null;
                     }
 
                     cmd.Parameters.AddWithValue("@pass", password);
 
-                 using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        return new UsuarioSesion
+                        if (reader.Read())
                         {
-                            Dni = reader.GetInt64(0),
-                            Nombre = reader.GetString(1),
-                            Apellido = reader.GetString(2),
-                            Rol = reader.GetString(3),
-                            
-                            // LEER EL BOOLEANO (BIT)
-                            // Si en SQL es BIT, en C# es bool.
-                            // GetBoolean(4) lee la columna 4 (r.permiso_admin)
-                            EsAdmin = reader.GetBoolean(4) 
-                        };
+                            return new UsuarioSesion
+                            {
+                                Dni = reader.GetInt64(0),
+                                Nombre = reader.GetString(1),
+                                Apellido = reader.GetString(2),
+                                Rol = reader.GetString(3),
+                                EsAdmin = reader.GetBoolean(4) 
+                            };
+                        }
                     }
                 }
             }
-        }
             catch (Exception ex)
             {
                 Console.WriteLine("Error SQL: " + ex.Message);
