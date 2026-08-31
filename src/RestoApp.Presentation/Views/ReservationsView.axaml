@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RestoApp.Presentation.ViewModels"
+             xmlns:models="clr-namespace:RestoApp.Presentation.Models"
+             x:Class="RestoApp.Presentation.Views.ReservationsView"
+             x:DataType="vm:ReservationsViewModel">
+
+    <Grid RowDefinitions="Auto, *" Margin="20">
+        
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <StackPanel>
+                <TextBlock Text="Gestión Integral de Reservas" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Creación de reservas simples/grupales, asignación de mesas y control de políticas de cancelación" FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Content Split: Form (Left) & List (Right) -->
+        <Grid Grid.Row="1" ColumnDefinitions="420, *">
+            
+            <!-- Reservation Form Panel -->
+            <Border Grid.Column="0" Background="#1E293B" CornerRadius="12" Padding="20" Margin="0,0,15,0">
+                <ScrollViewer>
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Nueva Reserva" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                        <Separator Background="#334155" Height="1"/>
+
+                        <!-- Client DNI & Name -->
+                        <TextBlock Text="DNI Cliente:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewDni}" MinHeight="44" Watermark="DNI del cliente..." VerticalContentAlignment="Center"/>
+
+                        <TextBlock Text="Nombre y Apellido Cliente:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewNombre}" MinHeight="44" Watermark="Nombre completo..." VerticalContentAlignment="Center"/>
+
+                        <TextBlock Text="Teléfono Contacto:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewTelefono}" MinHeight="44" Watermark="Teléfono..." VerticalContentAlignment="Center"/>
+
+                        <!-- Date & Time -->
+                        <Grid ColumnDefinitions="*, *">
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Fecha Reserva:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <DatePicker SelectedDate="{Binding NewFecha}" MinHeight="44" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Hora Turno:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <TimePicker SelectedTime="{Binding NewHora}" MinHeight="44" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Auto-calculated Cancellation Policy Banner -->
+                        <Border Background="#0F172A" Padding="12" CornerRadius="8" BorderBrush="#3B82F6" BorderThickness="1">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="⏳ RN-01 Política de Cancelación (-48h):" Foreground="#60A5FA" FontWeight="Bold" FontSize="12"/>
+                                <TextBlock Text="{Binding ComputedMaxCancellation, StringFormat='Cancelable sin penalidad hasta: {0:dd/MM/yyyy HH:mm}'}" 
+                                           Foreground="White" FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Sector, Guests & Table -->
+                        <Grid ColumnDefinitions="*, *">
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Comensales:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <NumericUpDown Value="{Binding NewComensales}" Minimum="1" Maximum="30" MinHeight="44"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Sector:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <ComboBox ItemsSource="{Binding Sectors}" SelectedItem="{Binding NewSector}" MinHeight="44" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Mesas Asignadas (Simple / Grupal):" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewMesas}" MinHeight="44" Watermark="Ej. Mesa 1, Mesa 2" VerticalContentAlignment="Center"/>
+
+                        <TextBlock Text="Vinculación a Evento Especial (Opcional):" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <ComboBox ItemsSource="{Binding Events}" SelectedItem="{Binding SelectedEvent}" MinHeight="44" HorizontalAlignment="Stretch"/>
+
+                        <!-- Submit Button -->
+                        <Button Content="➕ Crear Reserva" 
+                                Command="{Binding CreateReservationCommand}" 
+                                MinHeight="48" 
+                                Background="#2563EB" 
+                                Foreground="White" 
+                                FontWeight="Bold" 
+                                FontSize="15" 
+                                CornerRadius="8" 
+                                HorizontalAlignment="Stretch" 
+                                HorizontalContentAlignment="Center" 
+                                Margin="0,10,0,0"/>
+
+                        <!-- Form Feedback -->
+                        <Border Background="#0F172A" Padding="10" CornerRadius="6" IsVisible="{Binding HasFeedback}">
+                            <TextBlock Text="{Binding FeedbackMessage}" Foreground="#60A5FA" FontSize="12" TextWrapping="Wrap"/>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Reservations List & Search -->
+            <Grid Grid.Column="1" RowDefinitions="Auto, *">
+                
+                <!-- Search & Filters Bar -->
+                <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,15">
+                    <TextBox Text="{Binding SearchFilter}" 
+                             Watermark="🔍 Buscar por nombre o DNI cliente..." 
+                             MinHeight="44" 
+                             VerticalContentAlignment="Center" 
+                             CornerRadius="8"
+                             Margin="0,0,10,0"/>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Estado:" VerticalAlignment="Center" Foreground="#CBD5E1"/>
+                        <ComboBox ItemsSource="{Binding Statuses}" SelectedItem="{Binding StatusFilter}" MinHeight="44" Width="150"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- DataGrid of Reservations -->
+                <Border Grid.Row="1" Background="#1E293B" CornerRadius="12" Padding="15">
+                    <DataGrid ItemsSource="{Binding FilteredReservations}" 
+                              SelectedItem="{Binding SelectedReservation}"
+                              AutoGenerateColumns="False" 
+                              IsReadOnly="True" 
+                              GridLinesVisibility="All">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                            <DataGridTextColumn Header="Cliente" Binding="{Binding ClienteNombre}" Width="140"/>
+                            <DataGridTextColumn Header="DNI" Binding="{Binding ClienteDni}" Width="100"/>
+                            <DataGridTextColumn Header="Fecha / Hora" Binding="{Binding FechaFormateada}" Width="130"/>
+                            <DataGridTextColumn Header="Comensales" Binding="{Binding CantidadPersonas}" Width="90"/>
+                            <DataGridTextColumn Header="Sector / Mesas" Binding="{Binding MesasAsignadas}" Width="120"/>
+                            
+                            <DataGridTemplateColumn Header="Estado" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="models:ReservationModel">
+                                        <Border Background="{Binding Estado, Converter={StaticResource StatusToBrushConverter}}" 
+                                                CornerRadius="6" 
+                                                Padding="6,3" 
+                                                HorizontalAlignment="Center" 
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Estado}" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Límite Cancelación" Binding="{Binding CancelacionFormateada}" Width="140"/>
+                            <DataGridTextColumn Header="Evento" Binding="{Binding EventoVinculado, FallbackValue='-'}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

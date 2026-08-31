@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RestoApp.Presentation.ViewModels"
+             xmlns:models="clr-namespace:RestoApp.Presentation.Models"
+             x:Class="RestoApp.Presentation.Views.StaffView"
+             x:DataType="vm:StaffViewModel">
+
+    <Grid RowDefinitions="Auto, *" Margin="20">
+        
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <StackPanel>
+                <TextBlock Text="Gestión de Personal, Roles y Turnos" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Alta de empleados, asignación de franjas horarias y control de jerarquías RBAC" FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" ColumnDefinitions="400, *">
+            
+            <!-- Employee Registration & Shift Form -->
+            <Border Grid.Column="0" Background="#1E293B" CornerRadius="12" Padding="20" Margin="0,0,15,0">
+                <ScrollViewer>
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Alta / Edición de Empleado" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                        <Separator Background="#334155" Height="1"/>
+
+                        <!-- Personal Info -->
+                        <TextBlock Text="DNI:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewDni}" MinHeight="44" Watermark="DNI..." VerticalContentAlignment="Center"/>
+
+                        <Grid ColumnDefinitions="*, *">
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Nombre:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding NewNombre}" MinHeight="44" Watermark="Nombre..." VerticalContentAlignment="Center"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Apellido:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding NewApellido}" MinHeight="44" Watermark="Apellido..." VerticalContentAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Email:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewEmail}" MinHeight="44" Watermark="Email..." VerticalContentAlignment="Center"/>
+
+                        <TextBlock Text="Teléfono:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <TextBox Text="{Binding NewTelefono}" MinHeight="44" Watermark="Teléfono..." VerticalContentAlignment="Center"/>
+
+                        <!-- Role Selection -->
+                        <TextBlock Text="Rol Asignado:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                        <ComboBox ItemsSource="{Binding Roles}" SelectedItem="{Binding NewRol}" MinHeight="44" HorizontalAlignment="Stretch"/>
+
+                        <!-- Shift Times -->
+                        <Grid ColumnDefinitions="*, *">
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Inicio Turno:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding NewShiftStart}" MinHeight="44" Watermark="08:00" VerticalContentAlignment="Center"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Fin Turno:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding NewShiftEnd}" MinHeight="44" Watermark="16:00" VerticalContentAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Hierarchy Note -->
+                        <Border Background="#0F172A" Padding="10" CornerRadius="6" BorderBrush="#3B82F6" BorderThickness="1">
+                            <TextBlock Text="ℹ️ RN-03 Jerarquía: Gerente no puede asignar rol Dueño ni Gerente." Foreground="#60A5FA" FontSize="11" TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Submit Button -->
+                        <Button Content="💾 Guardar Empleado" 
+                                Command="{Binding RegisterStaffCommand}" 
+                                MinHeight="48" 
+                                Background="#10B981" 
+                                Foreground="White" 
+                                FontWeight="Bold" 
+                                FontSize="15" 
+                                CornerRadius="8" 
+                                HorizontalAlignment="Stretch" 
+                                HorizontalContentAlignment="Center" 
+                                Margin="0,10,0,0"/>
+
+                        <!-- Feedback Message -->
+                        <Border Background="#0F172A" Padding="10" CornerRadius="6" IsVisible="{Binding HasFeedback}">
+                            <TextBlock Text="{Binding FeedbackMessage}" Foreground="#60A5FA" FontSize="12" TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Staff Grid & Filters -->
+            <Grid Grid.Column="1" RowDefinitions="Auto, *">
+                
+                <!-- Filter Bar -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,15">
+                    <TextBlock Text="Filtrar por Rol:" VerticalAlignment="Center" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                    <ComboBox ItemsSource="{Binding RoleFilters}" SelectedItem="{Binding SelectedRoleFilter}" MinHeight="44" Width="180"/>
+                </StackPanel>
+
+                <!-- DataGrid -->
+                <Border Grid.Row="1" Background="#1E293B" CornerRadius="12" Padding="15">
+                    <DataGrid ItemsSource="{Binding FilteredStaff}" 
+                              SelectedItem="{Binding SelectedStaff}"
+                              AutoGenerateColumns="False" 
+                              IsReadOnly="True" 
+                              GridLinesVisibility="All">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="DNI" Binding="{Binding Dni}" Width="100"/>
+                            <DataGridTextColumn Header="Empleado" Binding="{Binding NombreCompleto}" Width="160"/>
+                            <DataGridTextColumn Header="Rol" Binding="{Binding Rol}" Width="110"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="160"/>
+                            <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="120"/>
+                            
+                            <DataGridTemplateColumn Header="Turno" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="models:StaffModel">
+                                        <TextBlock Text="{Binding TurnoInicio, StringFormat='{}{0} - '}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Run Text="{Binding TurnoFin}"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Estado" Width="110">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate DataType="models:StaffModel">
+                                        <Button Command="{Binding $parent[UserControl].((vm:StaffViewModel)DataContext).ToggleActiveCommand}"
+                                                CommandParameter="{Binding}"
+                                                MinHeight="32" 
+                                                Padding="8,4" 
+                                                CornerRadius="6"
+                                                Background="{Binding ActivoEnRol, Converter={StaticResource BoolToBrushConverter}}"
+                                                HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding ActivoEnRol, Converter={StaticResource BoolToTextConverter}}" Foreground="White" FontWeight="Bold" FontSize="11"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

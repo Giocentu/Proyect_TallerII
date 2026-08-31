@@ -1,0 +1,174 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RestoApp.Presentation.ViewModels"
+             xmlns:models="clr-namespace:RestoApp.Presentation.Models"
+             x:Class="RestoApp.Presentation.Views.TablesView"
+             x:DataType="vm:TablesViewModel">
+
+    <Grid RowDefinitions="Auto, Auto, *" Margin="20">
+        
+        <!-- Header & Stats -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,15">
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Gestión Visual de Mesas" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Control de disponibilidad y asignación por sector" FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+
+            <!-- Stats Bar -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <Border Background="#10B981" CornerRadius="8" Padding="12,6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Libres:" Foreground="White" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalLibres}" Foreground="White" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#3B82F6" CornerRadius="8" Padding="12,6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Reservadas:" Foreground="White" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalReservadas}" Foreground="White" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#F59E0B" CornerRadius="8" Padding="12,6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Ocupadas:" Foreground="White" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalOcupadas}" Foreground="White" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#EF4444" CornerRadius="8" Padding="12,6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="En Limpieza:" Foreground="White" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding TotalEnLimpieza}" Foreground="White" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!-- Sector Selector Filter -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,0,0,15">
+            <TextBlock Text="Sector:" VerticalAlignment="Center" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+            <ListBox ItemsSource="{Binding Sectors}" 
+                     SelectedItem="{Binding SelectedSector}"
+                     Background="Transparent">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="6"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="14,8" CornerRadius="6" Background="#334155" MinHeight="40">
+                            <TextBlock Text="{Binding}" Foreground="White" FontWeight="SemiBold"/>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+
+        <!-- Main Content: Map Grid + Detail Panel -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, 340">
+            
+            <!-- Table Map Cards Grid -->
+            <ScrollViewer Grid.Column="0" Margin="0,0,15,0">
+                <ItemsControl ItemsSource="{Binding FilteredTables}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="models:TableModel">
+                            <Button Command="{Binding $parent[UserControl].((vm:TablesViewModel)DataContext).SelectTableCommand}" 
+                                    CommandParameter="{Binding}"
+                                    Margin="8" 
+                                    Width="180" 
+                                    Height="140" 
+                                    Padding="0" 
+                                    Background="#1E293B" 
+                                    CornerRadius="12"
+                                    BorderBrush="{Binding Estado, Converter={StaticResource StatusToBrushConverter}}"
+                                    BorderThickness="3">
+                                <Grid RowDefinitions="Auto, *, Auto" Margin="12">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                        <TextBlock Text="{Binding NroMesa, StringFormat='Mesa #{0}'}" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Capacidad, StringFormat='👤 {0}'}" Foreground="#94A3B8"/>
+                                    </Grid>
+
+                                    <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Ubicacion}" FontSize="12" Foreground="#64748B"/>
+                                        <TextBlock Text="{Binding ClienteAsignado, FallbackValue=''}" FontSize="13" Foreground="#E2E8F0" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                    </StackPanel>
+
+                                    <Border Grid.Row="2" Background="{Binding Estado, Converter={StaticResource StatusToBrushConverter}}" CornerRadius="6" Padding="6,3" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="{Binding EstadoBadge}" Foreground="White" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Table Detail & Action Sidebar -->
+            <Border Grid.Column="1" Background="#1E293B" CornerRadius="12" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Detalles y Acciones de Mesa" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                    <Separator Background="#334155" Height="1"/>
+
+                    <!-- Selected Table Details -->
+                    <StackPanel Spacing="10" IsVisible="{Binding SelectedTable, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Text="Número Mesa:" Foreground="#94A3B8" Width="110"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedTable.NroMesa, StringFormat='Mesa #{0}'}" Foreground="White" FontWeight="Bold"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Text="Sector:" Foreground="#94A3B8" Width="110"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedTable.Ubicacion}" Foreground="White"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Text="Capacidad:" Foreground="#94A3B8" Width="110"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedTable.Capacidad, StringFormat='{}{0} comensales'}" Foreground="White"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Text="Estado Actual:" Foreground="#94A3B8" Width="110"/>
+                            <Border Grid.Column="1" Background="{Binding SelectedTable.Estado, Converter={StaticResource StatusToBrushConverter}}" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left">
+                                <TextBlock Text="{Binding SelectedTable.Estado}" Foreground="White" FontWeight="Bold" FontSize="12"/>
+                            </Border>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Text="Cliente:" Foreground="#94A3B8" Width="110"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedTable.ClienteAsignado, FallbackValue='(Ninguno)'}" Foreground="#F1F5F9"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *">
+                            <TextBlock Text="Consumo:" Foreground="#94A3B8" Width="110"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SelectedTable.MontoConsumo, StringFormat='$ {0:N2}'}" Foreground="#10B981" FontWeight="Bold"/>
+                        </Grid>
+
+                        <Separator Background="#334155" Height="1" Margin="0,5"/>
+
+                        <TextBlock Text="Cambiar Estado de la Mesa:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+
+                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *" Margin="0,5">
+                            <Button Grid.Row="0" Grid.Column="0" Content="🟢 LIBRE" Command="{Binding ChangeStateCommand}" CommandParameter="Libre" MinHeight="44" Margin="3" Background="#10B981" Foreground="White" FontWeight="Bold" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="0" Grid.Column="1" Content="🔵 RESERVADA" Command="{Binding ChangeStateCommand}" CommandParameter="Reservada" MinHeight="44" Margin="3" Background="#3B82F6" Foreground="White" FontWeight="Bold" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="1" Grid.Column="0" Content="🟠 OCUPADA" Command="{Binding ChangeStateCommand}" CommandParameter="Ocupada" MinHeight="44" Margin="3" Background="#F59E0B" Foreground="White" FontWeight="Bold" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                            <Button Grid.Row="1" Grid.Column="1" Content="🔴 EN LIMPIEZA" Command="{Binding ChangeStateCommand}" CommandParameter="En Limpieza" MinHeight="44" Margin="3" Background="#EF4444" Foreground="White" FontWeight="Bold" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Feedback message -->
+                    <Border Background="#0F172A" Padding="10" CornerRadius="8" Margin="0,10,0,0">
+                        <TextBlock Text="{Binding StatusMessage, FallbackValue='Seleccione una mesa para modificar su estado.'}" Foreground="#60A5FA" FontSize="12" TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

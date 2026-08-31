@@ -1,0 +1,186 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RestoApp.Presentation.ViewModels"
+             xmlns:models="clr-namespace:RestoApp.Presentation.Models"
+             x:Class="RestoApp.Presentation.Views.CashierView"
+             x:DataType="vm:CashierViewModel">
+
+    <Grid RowDefinitions="Auto, *" Margin="20">
+        
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <StackPanel>
+                <TextBlock Text="Módulo de Caja, Pagos y Balance de Turno" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Registro de cobros por múltiples medios de pago, apertura, arqueo y cierre de caja" FontSize="13" Foreground="#94A3B8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main TabControl -->
+        <TabControl Grid.Row="1">
+            
+            <!-- TAB 1: REGISTRO DE PAGOS -->
+            <TabItem Header="💳 Registrar Pagos y Cuentas" FontSize="15" FontWeight="Bold">
+                <Grid ColumnDefinitions="420, *" Margin="0,15,0,0">
+                    
+                    <!-- Left Payment Form -->
+                    <Border Grid.Column="0" Background="#1E293B" CornerRadius="12" Padding="20" Margin="0,0,15,0">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="Procesar Cobro" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                            <Separator Background="#334155" Height="1"/>
+
+                            <!-- Unpaid Table Selector -->
+                            <TextBlock Text="Seleccionar Mesa / Cuenta Pendiente:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                            <ComboBox ItemsSource="{Binding UnpaidTables}" 
+                                      SelectedItem="{Binding SelectedTableToPay}" 
+                                      MinHeight="44" 
+                                      HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="models:TableModel">
+                                        <TextBlock Text="{Binding DescripcionMesa}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Payment Method -->
+                            <TextBlock Text="Medio de Pago:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                            <ComboBox ItemsSource="{Binding PaymentMethods}" SelectedItem="{Binding SelectedPaymentMethod}" MinHeight="44" HorizontalAlignment="Stretch"/>
+
+                            <!-- Amount -->
+                            <TextBlock Text="Monto Total a Cobrar:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                            <TextBox Text="{Binding PaymentAmount}" MinHeight="44" FontSize="18" FontWeight="Bold" Foreground="#10B981" VerticalContentAlignment="Center"/>
+
+                            <!-- Receipt Preview Card -->
+                            <Border Background="#0F172A" Padding="12" CornerRadius="8" BorderBrush="#3B82F6" BorderThickness="1">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="🧾 Comprobante RestoApp" Foreground="#60A5FA" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding SelectedTableToPay.ClienteAsignado, StringFormat='Cliente: {0}', FallbackValue='Cliente: (Seleccionar)'}" Foreground="White"/>
+                                    <TextBlock Text="{Binding SelectedPaymentMethod, StringFormat='Método: {0}'}" Foreground="#94A3B8"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Process Button -->
+                            <Button Content="💳 Procesar Pago y Liquidar" 
+                                    Command="{Binding ProcessPaymentCommand}" 
+                                    MinHeight="50" 
+                                    Background="#2563EB" 
+                                    Foreground="White" 
+                                    FontWeight="Bold" 
+                                    FontSize="16" 
+                                    CornerRadius="8" 
+                                    HorizontalAlignment="Stretch" 
+                                    HorizontalContentAlignment="Center"/>
+
+                            <!-- Feedback -->
+                            <Border Background="#0F172A" Padding="10" CornerRadius="6" IsVisible="{Binding HasFeedback}">
+                                <TextBlock Text="{Binding FeedbackMessage}" Foreground="#60A5FA" FontSize="12" TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Right Transactions DataGrid -->
+                    <Border Grid.Column="1" Background="#1E293B" CornerRadius="12" Padding="15">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Historial de Cobros del Turno" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                            <DataGrid ItemsSource="{Binding Transactions}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="All" Height="450">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                                    <DataGridTextColumn Header="Hora" Binding="{Binding HoraFormateada}" Width="90"/>
+                                    <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="220"/>
+                                    <DataGridTextColumn Header="Monto" Binding="{Binding MontoFormateado}" Width="120"/>
+                                    <DataGridTextColumn Header="Medio de Pago" Binding="{Binding MetodoPago}" Width="150"/>
+                                    <DataGridTextColumn Header="Cajero" Binding="{Binding ProcesadoPor}" Width="140"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 2: CAJA Y ARQUEO -->
+            <TabItem Header="💰 Control de Caja y Arqueo" FontSize="15" FontWeight="Bold">
+                <Grid ColumnDefinitions="*, *" Margin="0,15,0,0">
+                    
+                    <!-- Balance Summary Panel -->
+                    <Border Grid.Column="0" Background="#1E293B" CornerRadius="12" Padding="20" Margin="0,0,10,0">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Balance y Totales del Turno" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                            <Separator Background="#334155" Height="1"/>
+
+                            <!-- Balance Cards -->
+                            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *">
+                                <Border Grid.Row="0" Grid.Column="0" Background="#0F172A" Padding="15" CornerRadius="8" Margin="4">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Fondo Inicial:" Foreground="#94A3B8" FontSize="12"/>
+                                        <TextBlock Text="{Binding ShiftBalance.MontoInicial, StringFormat='$ {0:N2}'}" Foreground="White" FontSize="20" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="0" Grid.Column="1" Background="#0F172A" Padding="15" CornerRadius="8" Margin="4">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Cobrado Efectivo:" Foreground="#10B981" FontSize="12"/>
+                                        <TextBlock Text="{Binding ShiftBalance.TotalEfectivo, StringFormat='$ {0:N2}'}" Foreground="#10B981" FontSize="20" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Grid.Column="0" Background="#0F172A" Padding="15" CornerRadius="8" Margin="4">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Cobrado Tarjetas:" Foreground="#3B82F6" FontSize="12"/>
+                                        <TextBlock Text="{Binding ShiftBalance.TotalTarjeta, StringFormat='$ {0:N2}'}" Foreground="#3B82F6" FontSize="20" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Grid.Column="1" Background="#0F172A" Padding="15" CornerRadius="8" Margin="4">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Cobrado Transferencia/QR:" Foreground="#8B5CF6" FontSize="12"/>
+                                        <TextBlock Text="{Binding ShiftBalance.TotalTransferencia, StringFormat='$ {0:N2}'}" Foreground="#8B5CF6" FontSize="20" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Border Background="#10B981" Padding="15" CornerRadius="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="TOTAL INGRESOS TURNO:" Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding ShiftBalance.TotalCobrado, StringFormat='$ {0:N2}'}" Foreground="White" FontWeight="Bold" FontSize="22"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Cash Closure & Audit Panel -->
+                    <Border Grid.Column="1" Background="#1E293B" CornerRadius="12" Padding="20" Margin="10,0,0,0">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Arqueo y Cierre de Caja" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                            <Separator Background="#334155" Height="1"/>
+
+                            <TextBlock Text="Efectivo Esperado en Caja (Fondo Inicial + Cobros en Efectivo):" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                            <Border Background="#0F172A" Padding="12" CornerRadius="8">
+                                <TextBlock Text="{Binding ShiftBalance.EfectivoEsperado, StringFormat='$ {0:N2}'}" Foreground="#60A5FA" FontSize="22" FontWeight="Bold"/>
+                            </Border>
+
+                            <TextBlock Text="Efectivo Recontado Físicamente:" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                            <TextBox Text="{Binding CountedCashInput}" MinHeight="44" FontSize="18" FontWeight="Bold" VerticalContentAlignment="Center"/>
+
+                            <Button Content="🔍 Calcular Arqueo" Command="{Binding CalculateClosureCommand}" MinHeight="44" Background="#334155" Foreground="White" FontWeight="Bold" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+                            <Border Background="#0F172A" Padding="15" CornerRadius="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="Diferencia de Arqueo:" Foreground="#CBD5E1" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding ShiftBalance.Diferencia, StringFormat='$ {0:N2}'}" Foreground="{Binding ShiftBalance.Diferencia, Converter={StaticResource StatusToBrushConverter}}" FontWeight="Bold" FontSize="20"/>
+                                </Grid>
+                            </Border>
+
+                            <Button Content="🔒 Finalizar y Cerrar Caja" Command="{Binding CloseShiftCommand}" MinHeight="50" Background="#EF4444" Foreground="White" FontWeight="Bold" FontSize="16" CornerRadius="8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+                            <!-- Feedback -->
+                            <Border Background="#0F172A" Padding="10" CornerRadius="6" IsVisible="{Binding HasFeedback}">
+                                <TextBlock Text="{Binding FeedbackMessage}" Foreground="#60A5FA" FontSize="12" TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,85 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RestoApp.Presentation.ViewModels"
+             x:Class="RestoApp.Presentation.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+
+    <Grid Background="#0F172A">
+        <Border HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Width="460" 
+                Padding="35" 
+                Background="#1E293B" 
+                CornerRadius="16"
+                BoxShadow="0 10 25 0 #000000">
+            <StackPanel Spacing="20">
+                
+                <!-- Logo / Header -->
+                <StackPanel HorizontalAlignment="Center" Spacing="8">
+                    <Border Background="#2563EB" CornerRadius="12" Width="64" Height="64" HorizontalAlignment="Center">
+                        <TextBlock Text="🍽️" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="RestoApp" FontSize="26" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Sistema de Gestión Gastronómica" FontSize="14" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <Separator Background="#334155" Height="1" Margin="0,5"/>
+
+                <!-- Form -->
+                <StackPanel Spacing="14">
+                    <TextBlock Text="DNI" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding Dni}" 
+                             MinHeight="44" 
+                             FontSize="16" 
+                             Watermark="Ingrese su DNI..."
+                             VerticalContentAlignment="Center"
+                             CornerRadius="8"/>
+
+                    <TextBlock Text="Contraseña" Foreground="#CBD5E1" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding Password}" 
+                             PasswordChar="•" 
+                             MinHeight="44" 
+                             FontSize="16" 
+                             Watermark="Ingrese su contraseña..."
+                             VerticalContentAlignment="Center"
+                             CornerRadius="8"/>
+
+                    <!-- Fast Role Switcher for Demo -->
+                    <Border Background="#0F172A" Padding="12" CornerRadius="8" Margin="0,5">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="⚡Seleccionar Rol Rápidamente" 
+                                       FontSize="12" 
+                                       Foreground="#60A5FA" 
+                                       FontWeight="Bold" 
+                                       HorizontalAlignment="Center"/>
+                            <WrapPanel HorizontalAlignment="Center">
+                                <Button Content="Dueño" Command="{Binding QuickSelectRoleCommand}" CommandParameter="Dueño" Margin="3" Padding="8,4" MinHeight="32" CornerRadius="6" Background="#334155"/>
+                                <Button Content="Gerente" Command="{Binding QuickSelectRoleCommand}" CommandParameter="Gerente" Margin="3" Padding="8,4" MinHeight="32" CornerRadius="6" Background="#334155"/>
+                                <Button Content="Recepcionista" Command="{Binding QuickSelectRoleCommand}" CommandParameter="Recepcionista" Margin="3" Padding="8,4" MinHeight="32" CornerRadius="6" Background="#334155"/>
+                                <Button Content="Cajero" Command="{Binding QuickSelectRoleCommand}" CommandParameter="Cajero" Margin="3" Padding="8,4" MinHeight="32" CornerRadius="6" Background="#334155"/>
+                                <Button Content="Mozo" Command="{Binding QuickSelectRoleCommand}" CommandParameter="Mozo" Margin="3" Padding="8,4" MinHeight="32" CornerRadius="6" Background="#334155"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Error Alert -->
+                    <Border Background="#7F1D1D" Padding="10" CornerRadius="6" IsVisible="{Binding HasError}">
+                        <TextBlock Text="{Binding ErrorMessage}" Foreground="#FCA5A5" FontSize="13" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Submit Button -->
+                    <Button Content="Iniciar Sesión" 
+                            Command="{Binding LoginCommand}" 
+                            MinHeight="48" 
+                            Background="#2563EB" 
+                            Foreground="White" 
+                            FontSize="16" 
+                            FontWeight="Bold" 
+                            CornerRadius="8" 
+                            HorizontalAlignment="Stretch" 
+                            HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
